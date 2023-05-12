@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home3/lumyriam/coravi.lumyriam.com/
+    - export REPOPATH=/home3/lumyriam/coravi.lumyriam.com
+    - /bin/rsync -a --exclude '.git' $REPOPATH $DEPLOYPATH

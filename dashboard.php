@@ -24,7 +24,7 @@ include "templates/header.php";
         <div class="col-sm">
             <div class="card">
                 <div class="card-body">
-                    Facturación del día: <strong>$ <span id="daily_revenue">0.00</span></strong>
+                    Facturación del día: <strong>$ <span id="daily_revenue">1,000.00</span></strong>
                 </div>
             </div>  
         </div>
