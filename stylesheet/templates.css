@@ -1,0 +1,153 @@
+ .base {
+   margin-top: 80px;
+   width: 100%;
+   height: 100%;
+   display: flex;
+   flex-wrap: wrap;
+   flex-direction: row;
+   justify-content: center;
+   align-content: center;
+  }
+ .base-users {
+  margin: 80px 10px 20px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+ }
+ .base-pos {
+  margin: 80px 10px 20px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+}
+.base-dashboard {
+  margin-top: 80px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+ }
+
+  .container-bottom {
+    margin: 10px 0px 10px 0px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .form-search {
+    width: 100%;
+  }
+ 
+  .img-table {
+    height: 80px;
+    width: auto;
+  }
+
+  .container-photo-pos {
+    margin-top: 1.5rem;
+    width: 100%;
+    height: 14rem;
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+  }
+
+  .card-img-top-t {
+    margin: 5;
+    height: auto;
+    width: 95%;
+    object-fit: scale-down;
+  }
+  .cart-button-quantity {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+.deleteProductCart {
+  display: inline-block;
+}
+.addOneProductCart {
+  display: inline-block;
+}
+.delete_from_cart {
+  display: inline-block;
+  text-align: right;
+}
+.changeProductCart {
+  display: inline-block;
+  width: 60px;
+  vertical-align: middle;
+}
+.changeProductCart2 {
+  display: inline-block;
+  width: 120px;
+  vertical-align: middle;
+}
+.button-float {
+  position: fixed;
+  top: 30%;
+  right: 20px;
+  z-index: 10;
+}
+#art-count {
+  display: inline-block;
+  text-align: center;
+  margin-top: 5px;
+  vertical-align: middle;
+}
+.container-emptyCart {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+
+input[type="number"].inputCartQuantity {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[type="number"].inputCartQuantity::-webkit-inner-spin-button,
+input[type="number"].inputCartQuantity::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.inputCartQuantity {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.inputPurchasePrice {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.accordion,
+.accordion-item,
+.accordion-header,
+.accordion-button,
+.accordion-collapse,
+.accordion-body {
+    background-color: transparent;
+    padding: 0px;
+}
