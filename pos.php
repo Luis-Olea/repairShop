@@ -6,11 +6,13 @@ if (!isset($_SESSION['logged'])) {
 
 require('db/conection.php');
 require('db/productClass.php');
+require('db/clientReceiptClass.php');
 
 $error_modal = false;
 
 try {
   $obj = new ProductClass();
+  $obj2 = new clientReceiptClass();
 } catch (Exception $e) {
   $error_modal = true;
   $errormsg = $e->getMessage();
@@ -19,18 +21,16 @@ try {
 // Agregar un producto al carrito
 if (isset($_POST['add_to_cart'])) {
   $productId = $_POST['productId'];
+  $productPrice = $_POST['productPrice'];
   if (isset($_SESSION['cart'][$productId])) {
-    $newQuantity = $_SESSION['cart'][$productId] + 1;
+    $newQuantity = $_SESSION['cart'][$productId]['quantity'] += 1;
     $maxQuantity = $obj->checkStock($conn, $newQuantity, $productId);
-    if ($newQuantity <= $maxQuantity) {
-      $_SESSION['cart'][$productId] = $newQuantity;
-    }
+    $_SESSION['cart'][$productId]['quantity'] = $maxQuantity;
   } else {
-    $newQuantity = 1;
-    $maxQuantity =  $obj->checkStock($conn, $newQuantity, $productId);
-    if ($newQuantity <= $maxQuantity) {
-      $_SESSION['cart'][$productId] = $newQuantity;
-    }
+    $_SESSION['cart'][$productId] = [
+      'quantity' => 1,
+      'price' => $productPrice
+    ];
   }
   if (isset($_SESSION['cartClient'])) {
     unset($_SESSION['actualQuantity']);
@@ -47,8 +47,8 @@ if (isset($_POST['add_to_cart'])) {
 if (isset($_POST['remove_from_cart'])) {
   $productId = $_POST['productId'];
   if (isset($_SESSION['cart'][$productId])) {
-    $_SESSION['cart'][$productId] -= 1;
-    if ($_SESSION['cart'][$productId] == 0) {
+    $_SESSION['cart'][$productId]['quantity'] -= 1;
+    if ($_SESSION['cart'][$productId]['quantity'] == 0) {
       unset($_SESSION['cart'][$productId]);
     }
   }
@@ -67,11 +67,9 @@ if (isset($_POST['remove_from_cart'])) {
 if (isset($_POST['add_from_cart'])) {
   $productId = $_POST['productId'];
   if (isset($_SESSION['cart'][$productId])) {
-    $newQuantity = $_SESSION['cart'][$productId] + 1;
+    $newQuantity = $_SESSION['cart'][$productId]['quantity'] += 1;
     $maxQuantity = $obj->checkStock($conn, $newQuantity, $productId);
-    if ($newQuantity <= $maxQuantity) {
-      $_SESSION['cart'][$productId] = $newQuantity;
-    }
+    $_SESSION['cart'][$productId]['quantity'] = $maxQuantity;
   }
   if (isset($_SESSION['cartClient'])) {
     unset($_SESSION['actualQuantity']);
@@ -92,7 +90,7 @@ if (isset($_POST['productId']) && isset($_POST['quantity'])) {
 
   // Verifica si hay suficiente stock
   $maxQuantity = $obj->checkStock($conn, $quantity, $productId);
-  $_SESSION['cart'][$productId] = $maxQuantity;
+  $_SESSION['cart'][$productId]['quantity'] = $maxQuantity;
   if (isset($_SESSION['cartClient'])) {
     unset($_SESSION['actualQuantity']);
     unset($_SESSION['creditToUse']);
@@ -103,7 +101,6 @@ if (isset($_POST['productId']) && isset($_POST['quantity'])) {
     unset($_SESSION['repplyNIP']);
   }
 }
-
 
 // Eliminar un producto del carrito
 if (isset($_POST['delete_from_cart'])) {
@@ -154,9 +151,21 @@ if (isset($_POST['validate_NIP'])) {
 
   $currentNIP = $_POST['clientNIP'];
   if (password_verify($currentNIP, $client->clientNIP)) {
-      unset($_SESSION['repplyNIP']);
+    unset($_SESSION['repplyNIP']);
+    try {
+      $obj2->createClientReceipt($conn);
+      if (mysqli_affected_rows($conn) > 0) {
+          header("Location: clientReceipt.php");
+      } else {
+        $error_modal = true;
+        $errormsg = 'Ocurrio un error';
+      }
+    } catch (Exception $e) {
+      $error_modal = true;
+      $errormsg = $e->getMessage();
+    }
   } else {
-      $_SESSION['repplyNIP'] = true;
+    $_SESSION['repplyNIP'] = true;
   }
 }
 
@@ -214,6 +223,7 @@ include("layouts/sidebarPos.php"); ?>
               <div class="card-footer">
                 <form method="post" class="addProductCart">
                   <div class="d-grid gap-2">
+                    <input type="hidden" name="productPrice" value="<?= $product->productPrice ?>">
                     <input type="hidden" name="productId" value="<?= $product->productId ?>">
                     <button type="submit" name="add_to_cart" class="btn btn-primary">Agregar al carrito</button>
                   </div>
@@ -239,12 +249,14 @@ include "templates/footer.php"; ?>
   $(".addProductCart").on("submit", function(event) {
     event.preventDefault();
     var productId = $(this).find("input[name='productId']").val();
+    var productPrice = $(this).find("input[name='productPrice']").val();
     $.ajax({
       type: "POST",
       url: "pos.php",
       data: {
         add_to_cart: true,
-        productId: productId
+        productId: productId,
+        productPrice: productPrice
       },
       success: function(response) {
         // Actualiza el contenido del modal con la información del carrito actualizada

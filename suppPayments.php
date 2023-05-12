@@ -183,9 +183,10 @@ include("layouts/sidebar.php"); ?>
             </tr>
 
             <tr align="center" class="active">
-              <th colspan="2">Producto</th>
+              <th>Producto</th>
               <th>Cantidad</th>
               <th>Precio</th>
+              <th>Subtotal</th>
             </tr>
             <?php
             try {
@@ -194,9 +195,11 @@ include("layouts/sidebar.php"); ?>
               while ($product = mysqli_fetch_object($products)) :
             ?>
                 <tr align="center">
-                  <td colspan="2"><?= $product->productName ?></td>
+                  <td><?= $product->productName ?></td>
                   <td><?= $product->quantity ?></td>
                   <td>$<?= $product->purchasePrice ?></td>
+                  <td>$<?= $product->quantity * $product->purchasePrice ?></td>
+
                 </tr>
             <?php endwhile;
             } catch (Exception $e) {

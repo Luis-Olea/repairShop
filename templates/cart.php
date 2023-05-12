@@ -28,8 +28,9 @@ if (!isset($_SESSION['logged'])) {
                                         <th>Precio</th>
                                         <th>Subtotal</th>
                                     </tr>
-                                    <?php foreach ($_SESSION['cart'] as $product_id => $quantity) :
-                                        // Obtener información del producto de la base de datos
+                                    <?php foreach ($_SESSION['cart'] as $product_id => $item) :
+                                        $quantity = $item['quantity'];
+                                        $price = $item['price'];                                        // Obtener información del producto de la base de datos
                                         $stmt = $conn->prepare("SELECT * FROM products WHERE productId = ?");
                                         $stmt->bind_param("i", $product_id);
                                         $stmt->execute();
@@ -63,15 +64,15 @@ if (!isset($_SESSION['logged'])) {
                                                         <button type="submit" name="delete_from_cart" class="btn btn-danger btn-sm">X</button>
                                                     </form>
                                                 </td>
-                                                <td><?= $product->productPrice ?></td>
-                                                <td><?= $subtotal ?></td>
+                                                <td>$<?= $price ?></td>
+                                                <td>$<?= $subtotal ?></td>
                                             </tr>
                                     <?php endif;
                                     endforeach
                                     ?>
                                     <tr style='vertical-align:middle;'>
                                         <td colspan='5'>Total</td>
-                                        <td align='center'><?= $total ?></td>
+                                        <td align='center'>$<?= $total ?></td>
                                         <?php $_SESSION['totalCart'] = $total; ?>
                                     </tr>
                                 </thead>
@@ -113,15 +114,18 @@ if (!isset($_SESSION['logged'])) {
                         <select class="form-select" id="clientName" name="clientId" required>
                             <option selected>Selecciona un cliente...</option>
                             <?php
-                            $clients = $conn->query("SELECT * FROM clients");
-                            try { ?>
-                                <?php while ($client = mysqli_fetch_object($clients)) : ?>
-                                    <option value="<?= $client->clientId ?>"><?= $client->clientName ?> <?= $client->clientLastName ?></option>
-                                <?php endwhile; ?>
-                            <?php } catch (Exception $e) {
+                            try {
+                                $stmt = $conn->prepare("SELECT clientId, clientName, clientLastName FROM clients");
+                                $stmt->execute();
+                                $clients = $stmt->get_result();
+                                while ($client = $clients->fetch_object()) : ?>
+                                    <option value="<?= htmlspecialchars($client->clientId) ?>"><?= htmlspecialchars($client->clientName) ?> <?= htmlspecialchars($client->clientLastName) ?></option>
+                            <?php endwhile;
+                            } catch (Exception $e) {
                                 $error_modal = true;
                                 $errormsg = $e->getMessage();
-                            } ?>
+                            }
+                            ?>
                         </select>
                     </div>
                     <div class="clientInfo">

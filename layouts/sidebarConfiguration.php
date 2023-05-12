@@ -41,9 +41,9 @@
                     </a>
                 </li>
                 <li class="list">
-                    <a href="#" class="nav-sb-link">
+                    <a href="clientReceipt.php" class="nav-sb-link">
                         <i class="bx bx-dollar-circle icon"></i>
-                        <span class="link">Creditos</span>
+                        <span class="link">Ventas</span>
                     </a>
                 </li>
                 <li class="list">
