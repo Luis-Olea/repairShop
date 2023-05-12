@@ -12,8 +12,7 @@ include "templates/header.php";
 
 <div class="base">
 
-Aqui van las configuraciones
-
+Configuraciones
 </div>
 
 <!-- HTML END BODY -->
