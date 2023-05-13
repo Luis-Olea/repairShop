@@ -152,7 +152,6 @@ input[type="number"].inputCartQuantity::-webkit-outer-spin-button {
 }
 
 .container-bottom-dashboard {
-  margin: 10px;
   width: 100%;
   display: flex;
   flex-wrap: wrap;

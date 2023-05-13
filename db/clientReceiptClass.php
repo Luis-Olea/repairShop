@@ -46,7 +46,7 @@ class clientReceiptClass
     }
     function getClientReceipts($conn)
     {
-        $sql = "SELECT * FROM clientreceipt";
+        $sql = "SELECT * FROM clientreceipt ORDER BY cReceiptDate DESC";
         return $conn->query($sql);
     }
 }

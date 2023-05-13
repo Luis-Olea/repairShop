@@ -109,7 +109,7 @@ function salesPerDay($conn)
     $labels = [];
     $data = array_fill(1, $numDays, 0);
     for ($i = 1; $i <= $numDays; $i++) {
-        $labels[] = 'Day ' . $i;
+        $labels[] = 'Día ' . $i;
     }
 
     // Llenar el arreglo con los datos de la consulta
@@ -130,68 +130,71 @@ include('layouts/sidebar.php'); ?>
         <?php $user = nameUser($conn); ?>
         <h1>Bienvenido <?= htmlspecialchars($user['userName']) . ' ' . htmlspecialchars($user['userLastName']); ?></h1>
     </div>
-    <div class="row row-cols-1 row-cols-md-2 g-4" style="margin: 5px;">
+    <div class="row row-cols-1 row-cols-md-2 g-4" style="margin: 0 5px 10px;">
 
         <div class="col" style="width: 100%;">
-            <div class="card">
-                <div class="card-header">
+            <div class="card" style="width: 100%;">
+                <div class="card-header" style="text-align:middle;">
                     <h3 class="card-title">Ventas del mes</h3>
                 </div>
-                <div class="card-body">
-                    <?php
-                    // Llamar a la función salesPerDay
-                    $result = salesPerDay($conn);
+                <?php
+                // Llamar a la función salesPerDay
+                $result = salesPerDay($conn);
 
-                    // Obtener los datos para la gráfica
-                    $labels = $result['labels'];
-                    $data = $result['data'];
-                    ?>
-                    <canvas id="myChart" width="100%" height="auto"></canvas>
-                    <script>
-                        // Datos para la gráfica
-                        var labels = <?php echo json_encode($labels); ?>;
-                        var data = <?php echo json_encode($data); ?>;
+                // Obtener los datos para la gráfica
+                $labels = $result['labels'];
+                $data = $result['data'];
+                ?>
+                <canvas id="myChart"></canvas>
+                <script>
+                    // Datos para la gráfica
+                    var labels = <?php echo json_encode($labels); ?>;
+                    var data = <?php echo json_encode($data); ?>;
 
-                        // Crear la gráfica
-                        var ctx = document.getElementById('myChart').getContext('2d');
-                        var myChart = new Chart(ctx, {
-                            type: 'line',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    label: 'Ventas',
-                                    data: data,
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    borderWidth: 1
-                                }]
+                    // Crear la gráfica
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Ventas',
+                                data: data,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1,
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            aspectRatio: 2.7,
+                            animation: {
+                                duration: 2000,
+                                easing: 'easeOutBounce'
                             },
-                            options: {
-                                animation: {
-                                    duration: 2000,
-                                    easing: 'easeOutBounce'
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Total de ventas'
-                                        }
-                                    }
-                                },
-                                plugins: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Ventas por día'
-                                    },
-                                    legend: {
-                                        display: false
+                                        text: 'Total de ventas'
                                     }
                                 }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Ventas por día'
+                                },
+                                legend: {
+                                    display: false
+                                }
                             }
-                        });
-                    </script>
+                        }
+                    });
+                </script>
+                <div class="card-footer" style="width: 100%;">
+                    <h3 class="card-title">Grafica mensual</h3>
                 </div>
             </div>
         </div>
@@ -223,18 +226,6 @@ include('layouts/sidebar.php'); ?>
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Gastos de hoy</h3>
-                </div>
-                <div class="card-body">
-                    <?php $expenseToday = expensesToday($conn); ?>
-                    <h5 class="card-text">$<?= number_format($expenseToday['daily_expenses'], 2) ?></h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
                     <h3 class="card-title">Ventas de hoy</h3>
                 </div>
                 <div class="card-body">
@@ -259,6 +250,18 @@ include('layouts/sidebar.php'); ?>
         <div class="col">
             <div class="card">
                 <div class="card-header">
+                    <h3 class="card-title">Gastos de hoy</h3>
+                </div>
+                <div class="card-body">
+                    <?php $expenseToday = expensesToday($conn); ?>
+                    <h5 class="card-text">$<?= number_format($expenseToday['daily_expenses'], 2) ?></h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
                     <h3 class="card-title">Gastos del mes</h3>
                 </div>
                 <div class="card-body">
@@ -270,8 +273,10 @@ include('layouts/sidebar.php'); ?>
 
         <div class="col" style="width: 100%;">
             <div class="card">
-                <div class="card-body">
+                <div class="card-header">
                     <h3 class="card-title">Productos más vendidos</h3>
+                </div>
+                <div class="card-body">
                     <div class="table table-responsive">
                         <table class="table table-bordered">
                             <thead class="table-light">

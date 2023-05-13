@@ -112,18 +112,22 @@ if (isset($_POST['productSupplier'])) {
 
 if (isset($_POST['searchSuppPayment'])) {
   try {
-    $sql = "SELECT * FROM supppayments WHERE paymentDate LIKE '%" . $_POST['data'] . "%'  or paymentAmount LIKE '%" . $_POST['data'] . "%' ";
-    $suppPayments = $conn->query($sql);
+      $sql = "SELECT * FROM supppayments WHERE paymentDate LIKE ? OR paymentAmount LIKE ? ORDER BY paymentDate DESC";
+      $stmt = $conn->prepare($sql);
+      $data = "%" . $_POST['data'] . "%";
+      $stmt->bind_param("ss", $data, $data);
+      $stmt->execute();
+      $suppPayments = $stmt->get_result();
   } catch (Exception $e) {
-    $error_modal = true;
-    $errormsg = $e->getMessage();
+      $error_modal = true;
+      $errormsg = $e->getMessage();
   }
 } else {
   try {
-    $suppPayments = $obj->getSuppPayments($conn);
+      $suppPayments = $obj->getSuppPayments($conn);
   } catch (Exception $e) {
-    $error_modal = true;
-    $errormsg = $e->getMessage();
+      $error_modal = true;
+      $errormsg = $e->getMessage();
   }
 }
 

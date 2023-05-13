@@ -40,7 +40,7 @@ class suppPaymentsClass
     }
     function getSuppPayments($conn)
     {
-        $sql = "SELECT * FROM supppayments";
+        $sql = "SELECT * FROM supppayments ORDER BY paymentDate DESC";
         return $conn->query($sql);
     }
 }
