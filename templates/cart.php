@@ -11,8 +11,8 @@ if (!isset($_SESSION['logged'])) {
                 <h1 class="modal-title fs-5" id="cartModal">Carrito</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="cart1">
-                <div class="modal-body">
+            <div class="modal-body">
+                <div class="cart1">
                     <div class="table table-responsive">
                         <?php
                         $total = 0;
@@ -88,12 +88,14 @@ if (!isset($_SESSION['logged'])) {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                    <?php if (isset($_SESSION['cart'])) : ?>
-                        <button type="submit" class="btn btn-success" data-bs-target="#cart2" data-bs-toggle="modal">Siguente</button>
-                    <?php else : ?>
-                        <a href="#" class="btn btn-success disabled" tabindex="-1" role="button" aria-disabled="true">Siguente</a>
-                    <?php endif ?>
+                    <div class="modal-footer-cart">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                        <?php if (isset($_SESSION['cart'])) : ?>
+                            <button type="submit" class="btn btn-success" data-bs-target="#cart2" data-bs-toggle="modal">Siguente</button>
+                        <?php else : ?>
+                            <a href="#" class="btn btn-success disabled" tabindex="-1" role="button" aria-disabled="true">Siguente</a>
+                        <?php endif ?>
+                    </div>
                 </div>
             </div>
         </div>

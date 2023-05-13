@@ -4,7 +4,7 @@ if (!isset($_SESSION['logged'])) {
 }
 ?>
 
-<div class="modal fade modal-lg" id="addSuppPayment" tabindex="-1" aria-labelledby="addSuppPaymentModal" aria-hidden="true">
+<div class="modal fade modal-xl" id="addSuppPayment" tabindex="-1" aria-labelledby="addSuppPaymentModal" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">

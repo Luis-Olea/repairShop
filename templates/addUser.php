@@ -33,6 +33,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text">Contraseña<span class="red-text-modal">*</span></span>
                                     <input class="form-control" type="password" name="password" required>
+                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
                                 </div>
                             </div>
                         </div>

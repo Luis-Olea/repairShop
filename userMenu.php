@@ -1,7 +1,17 @@
 <?php
 session_start();
 if (!isset($_SESSION['logged'])) {
-  header('location: index.php');
+  header('location: db/exit.php');
+  exit;
+}
+
+// Verificar token CSRF
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+      // Redirigir al usuario al inicio de sesión
+      header('Location: db/exit.php');
+      exit;
+  }
 }
 
 require('db/conection.php');
@@ -154,12 +164,14 @@ include('layouts/sidebar.php'); ?>
               <td class="d-none d-md-table-cell"><?= $user->userEmail ?></td>
               <td>
                 <form method="post">
+                  <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
                   <input type="submit" class="btn btn-primary" name="getIdUpdate" value="Editar">
                   <input type="hidden" value="<?= $user->userId ?>" name="userId">
                 </form>
               </td>
               <td class="d-none d-md-table-cell">
                 <form method="post">
+                  <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
                   <input type="submit" class="btn btn-danger" name="getIdDelete" value="Eliminar">
                   <input type="hidden" value="<?= $user->userId ?>" name="userId">
                 </form>

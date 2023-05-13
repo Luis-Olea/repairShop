@@ -11,6 +11,7 @@ class clientReceiptClass
                 $currentUser = $user->userId;
             }
         } catch (Exception $e) {
+            return $e;
         }
         $change = ($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse']) - 2 * ($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse']);
         $currentTime = date('Y-m-d H:i:s');
@@ -29,6 +30,7 @@ class clientReceiptClass
                 $stmt->bind_param("iidd", $clientReceiptId, $idProduct, $productPrice, $quantity);
                 $stmt->execute();
             } catch (Exception $e) {
+                return $e;
             }
             try {
                 $sql = "UPDATE products SET productQuantity = productQuantity - ? WHERE productId = ?";
@@ -36,13 +38,16 @@ class clientReceiptClass
                 $stmt->bind_param("ii", $quantity, $idProduct);
                 $stmt->execute();
             } catch (Exception $e) {
+                return $e;
             }
         }
         try {
             $sql = "UPDATE clients SET clientDue = clientDue + " . $_SESSION['creditToUse'] . " WHERE clientId = '" . $_SESSION['cartClient'] . "' ";
             $conn->query($sql);
         } catch (Exception $e) {
+            return $e;
         }
+        return TRUE;
     }
     function getClientReceipts($conn)
     {

@@ -9,6 +9,7 @@ require('db/productClass.php');
 require('db/clientReceiptClass.php');
 
 $error_modal = false;
+$correct_modal = false;
 
 try {
   $obj = new ProductClass();
@@ -18,7 +19,8 @@ try {
   $errormsg = $e->getMessage();
 }
 
-function resetSessionVars() {
+function resetSessionVars()
+{
   ///Sirve para comprobar si se realizo un cambio en el carrito y si ya se elegio un cliente.
   if (isset($_SESSION['cartClient'])) {
     unset($_SESSION['actualQuantity']);
@@ -133,12 +135,13 @@ if (isset($_POST['validate_NIP'])) {
 
 if (isset($_POST['finishShopping'])) {
   try {
-    $obj2->createClientReceipt($conn);
-    if (mysqli_affected_rows($conn) > 0) {
-      header("Location: clientReceipt.php");
+    $repply = $obj2->createClientReceipt($conn);
+    if ($repply == TRUE) {
+      //header("Location: pos.php");
+      $correct_modal = true;
     } else {
       $error_modal = true;
-      $errormsg = 'Ocurrio un error';
+      $errormsg = $repply;
     }
   } catch (Exception $e) {
     $error_modal = true;
@@ -221,9 +224,12 @@ include("layouts/sidebarPos.php"); ?>
 </div>
 
 <!-- HTML END BODY -->
+
 <?php
-include "templates/cart.php";
-include "templates/footer.php"; ?>
+include('templates/correct_modal.php');
+include("templates/error_modal.php");
+include("templates/cart.php");
+include("templates/footer.php"); ?>
 
 <script>
   $(".addProductCart").on("submit", function(event) {
@@ -257,6 +263,11 @@ include "templates/footer.php"; ?>
         $.get('templates/cart.php', function(data) {
           var newContent = $(data).find('#clientName').html();
           $('#cart2 #clientName').html(newContent);
+        });
+        // Actualiza el contenido del modal con la información del carrito actualizada
+        $.get('templates/cart.php', function(data) {
+          var newContent = $(data).find('.modal-footer-cart').html();
+          $('#cart .modal-footer-cart').html(newContent);
         });
       }
     });
@@ -511,3 +522,31 @@ include "templates/footer.php"; ?>
     });
   });
 </script>
+
+<?php if ($correct_modal) :
+  $correct_modal = false;
+?>
+  <script>
+    $(function() {
+      $('#correctBC').modal('show');
+      setTimeout(() => {
+        $('#correctBC').modal('hide');
+        window.location.reload();
+      }, 4000);
+    })
+  </script>;
+<?php endif; ?>
+
+<?php if ($error_modal) :
+  $error_modal = false;
+?>
+  <script>
+    $(function() {
+      $('#error_modal').modal('show');
+      setTimeout(() => {
+        $('#error_modal').modal('hide');
+        window.location.reload();
+      }, 4000);
+    })
+  </script>
+<?php endif; ?>

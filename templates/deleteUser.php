@@ -31,6 +31,7 @@
            </div>
          </div>
          <div class="modal-footer">
+          <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
            <input type="hidden" value="<?= $user->userId ?>" name="userId">
            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
            <button type="submit" class="btn btn-success" name="deleteUser" value="Delete">Eliminar Usuario</button>

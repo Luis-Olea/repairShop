@@ -76,7 +76,10 @@ function stonksWeek($conn)
 {
     $sql = "SELECT YEAR(cReceiptDate) AS year, WEEK(cReceiptDate) AS week, SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientreceiptproducts JOIN clientreceipt ON clientreceiptproducts.cReceiptId = clientreceipt.cReceiptId JOIN products ON clientreceiptproducts.cReceiptProductId = products.productId GROUP BY year, week ORDER BY year, week;";
     $result = $conn->query($sql);
-    $stonkWeek = $result->fetch_assoc();
+    $stonkWeek = array();
+    while ($row = $result->fetch_assoc()) {
+        $stonkWeek[] = $row;
+    }
     return $stonkWeek;
 }
 
@@ -217,9 +220,15 @@ include('layouts/sidebar.php'); ?>
                     <h3 class="card-title">Ganancias semanales</h3>
                 </div>
                 <div class="card-body">
-                    <?php $stonksWeek = stonksWeek($conn); ?>
-                    <h5 class="card-text">$<?= number_format($stonksWeek['total_profit'], 2) ?></h5>
+                    <?php
+                    $stonksWeek = stonksWeek($conn);
+                    if (count($stonksWeek) > 0) : ?>
+                        <h5 class="card-text">$ <?=number_format($stonksWeek[0]['total_profit'], 2)?></h5>
+                    <?php else : ?>
+                        <h5 class="card-text">$ 0.00</h5>
+                    <?php endif ?>
                 </div>
+
             </div>
         </div>
 

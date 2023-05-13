@@ -1,5 +1,9 @@
-<?php 
+<?php
 session_start();
+// Generar token CSRF
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -35,6 +39,7 @@ session_start();
                 ?>
             </div>
             <form action="db/session.php" method="POST" class="login-card-form">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">mail</span>
                     <input autocomplete="username" name="email" type="text" placeholder="Correo" id="emailForm" autofocus required>
@@ -55,7 +60,7 @@ session_start();
             </form>
         </div>
     </div>
-
 </body>
+
 
 </html>

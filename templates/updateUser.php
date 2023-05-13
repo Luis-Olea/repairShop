@@ -37,6 +37,7 @@ $user = $_SESSION['user'];
                                     <span class="input-group-text">Correo<span class="red-text-modal">*</span></span>
                                     <input class="form-control" value="<?= $user->userEmail ?>" type="email" name="userEmail" required>
                                     <input type="hidden" value="<?= $user->userId ?>" name="userId">
+                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
                                 </div>
                             </div>
                         </div>
