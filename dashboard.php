@@ -11,7 +11,7 @@ require('db/conection.php');
 
 function getBestSellerP($conn)
 {
-    $sql = "SELECT p.productName, SUM(c.cReceiptQuantity) AS total_sold FROM clientReceiptProducts c JOIN products p ON c.cReceiptProductId = p.productId GROUP BY c.cReceiptProductId ORDER BY total_sold DESC LIMIT 3";
+    $sql = "SELECT p.productName, SUM(c.cReceiptQuantity) AS total_sold FROM clientreceiptproducts c JOIN products p ON c.cReceiptProductId = p.productId GROUP BY c.cReceiptProductId ORDER BY total_sold DESC LIMIT 3";
     $result = $conn->query($sql);
     $bestSellerProducts = array();
     while ($row = $result->fetch_assoc()) {
@@ -22,7 +22,7 @@ function getBestSellerP($conn)
 
 function sellsDay($conn)
 {
-    $sql = "SELECT SUM(cReceiptTotal) AS daily_sales FROM clientReceipt WHERE DATE(cReceiptDate) = CURDATE()";
+    $sql = "SELECT SUM(cReceiptTotal) AS daily_sales FROM clientreceipt WHERE DATE(cReceiptDate) = CURDATE()";
     $result = $conn->query($sql);
     $sellsToday = $result->fetch_assoc();
     return $sellsToday;
@@ -38,7 +38,7 @@ function expensesToday($conn)
 
 function sellsMonth($conn)
 {
-    $sql = "SELECT SUM(cReceiptTotal) AS monthly_sales FROM clientReceipt WHERE MONTH(cReceiptDate) = MONTH(CURDATE()) AND YEAR(cReceiptDate) = YEAR(CURDATE())";
+    $sql = "SELECT SUM(cReceiptTotal) AS monthly_sales FROM clientreceipt WHERE MONTH(cReceiptDate) = MONTH(CURDATE()) AND YEAR(cReceiptDate) = YEAR(CURDATE())";
     $result = $conn->query($sql);
     $sellMonth = $result->fetch_assoc();
     return $sellMonth;
@@ -66,7 +66,7 @@ function nameUser($conn)
 function stonksToday($conn)
 {
     $currentTime = date('Y-m-d');
-    $sql = "SELECT SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientReceiptProducts JOIN clientReceipt ON clientReceiptProducts.cReceiptId = clientReceipt.cReceiptId JOIN products ON clientReceiptProducts.cReceiptProductId = products.productId WHERE DATE(cReceiptDate) = '" . $currentTime . "';";
+    $sql = "SELECT SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientreceiptproducts JOIN clientreceipt ON clientreceiptproducts.cReceiptId = clientreceipt.cReceiptId JOIN products ON clientreceiptproducts.cReceiptProductId = products.productId WHERE DATE(cReceiptDate) = '" . $currentTime . "';";
     $result = $conn->query($sql);
     $stonkToday = $result->fetch_assoc();
     return $stonkToday;
@@ -74,7 +74,7 @@ function stonksToday($conn)
 
 function stonksWeek($conn)
 {
-    $sql = "SELECT YEAR(cReceiptDate) AS year, WEEK(cReceiptDate) AS week, SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientReceiptProducts JOIN clientReceipt ON clientReceiptProducts.cReceiptId = clientReceipt.cReceiptId JOIN products ON clientReceiptProducts.cReceiptProductId = products.productId GROUP BY year, week ORDER BY year, week;";
+    $sql = "SELECT YEAR(cReceiptDate) AS year, WEEK(cReceiptDate) AS week, SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientreceiptproducts JOIN clientreceipt ON clientreceiptproducts.cReceiptId = clientreceipt.cReceiptId JOIN products ON clientreceiptproducts.cReceiptProductId = products.productId GROUP BY year, week ORDER BY year, week;";
     $result = $conn->query($sql);
     $stonkWeek = $result->fetch_assoc();
     return $stonkWeek;
@@ -82,7 +82,7 @@ function stonksWeek($conn)
 
 function graphicStonksWeek($conn)
 {
-    $query = " SELECT YEAR(cReceiptDate) AS year, WEEK(cReceiptDate) AS week, SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientReceiptProducts JOIN clientReceipt ON clientReceiptProducts.cReceiptId = clientReceipt.cReceiptId JOIN products ON clientReceiptProducts.cReceiptProductId = products.productId GROUP BY year, week ORDER BY year, week; ";
+    $query = " SELECT YEAR(cReceiptDate) AS year, WEEK(cReceiptDate) AS week, SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientreceiptproducts JOIN clientreceipt ON clientreceiptproducts.cReceiptId = clientreceipt.cReceiptId JOIN products ON clientreceiptproducts.cReceiptProductId = products.productId GROUP BY year, week ORDER BY year, week; ";
     $result = $conn->query($query);
 
     $labels = [];
@@ -98,7 +98,7 @@ function salesPerDay($conn)
 {
     $year = date('Y');
     $month = date('m');
-    $query = "SELECT DAY(cReceiptDate) AS day, SUM(cReceiptPrice * cReceiptQuantity) AS total_sales FROM clientReceiptProducts JOIN clientReceipt ON clientReceiptProducts.cReceiptId = clientReceipt.cReceiptId WHERE YEAR(cReceiptDate) = ? AND MONTH(cReceiptDate) = ? GROUP BY day ORDER BY day;";
+    $query = "SELECT DAY(cReceiptDate) AS day, SUM(cReceiptPrice * cReceiptQuantity) AS total_sales FROM clientreceiptproducts JOIN clientreceipt ON clientreceiptproducts.cReceiptId = clientreceipt.cReceiptId WHERE YEAR(cReceiptDate) = ? AND MONTH(cReceiptDate) = ? GROUP BY day ORDER BY day;";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('ii', $year, $month);
     $stmt->execute();
