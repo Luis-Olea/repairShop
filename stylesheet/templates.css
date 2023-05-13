@@ -27,7 +27,6 @@
 .base-dashboard {
   margin-top: 80px;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -150,4 +149,14 @@ input[type="number"].inputCartQuantity::-webkit-outer-spin-button {
 .accordion-body {
     background-color: transparent;
     padding: 0px;
+}
+
+.container-bottom-dashboard {
+  margin: 10px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }

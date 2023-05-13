@@ -18,6 +18,20 @@ try {
   $errormsg = $e->getMessage();
 }
 
+function resetSessionVars() {
+  ///Sirve para comprobar si se realizo un cambio en el carrito y si ya se elegio un cliente.
+  if (isset($_SESSION['cartClient'])) {
+    unset($_SESSION['actualQuantity']);
+    unset($_SESSION['creditToUse']);
+    unset($_SESSION['cartClient']);
+    unset($_SESSION['creditToUse']);
+    unset($_SESSION['totalCart']);
+    unset($_SESSION['creditAvailable']);
+    unset($_SESSION['repplyNIP']);
+    unset($_SESSION['TryrepplyNIP']);
+  }
+}
+
 // Agregar un producto al carrito
 if (isset($_POST['add_to_cart'])) {
   $productId = $_POST['productId'];
@@ -32,15 +46,7 @@ if (isset($_POST['add_to_cart'])) {
       'price' => $productPrice
     ];
   }
-  if (isset($_SESSION['cartClient'])) {
-    unset($_SESSION['actualQuantity']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['cartClient']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['totalCart']);
-    unset($_SESSION['creditAvailable']);
-    unset($_SESSION['repplyNIP']);
-  }
+  resetSessionVars();
 }
 
 // Eliminar un producto del carrito
@@ -52,15 +58,7 @@ if (isset($_POST['remove_from_cart'])) {
       unset($_SESSION['cart'][$productId]);
     }
   }
-  if (isset($_SESSION['cartClient'])) {
-    unset($_SESSION['actualQuantity']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['cartClient']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['totalCart']);
-    unset($_SESSION['creditAvailable']);
-    unset($_SESSION['repplyNIP']);
-  }
+  resetSessionVars();
 }
 
 // Agregar un producto del carrito
@@ -71,15 +69,7 @@ if (isset($_POST['add_from_cart'])) {
     $maxQuantity = $obj->checkStock($conn, $newQuantity, $productId);
     $_SESSION['cart'][$productId]['quantity'] = $maxQuantity;
   }
-  if (isset($_SESSION['cartClient'])) {
-    unset($_SESSION['actualQuantity']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['cartClient']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['totalCart']);
-    unset($_SESSION['creditAvailable']);
-    unset($_SESSION['repplyNIP']);
-  }
+  resetSessionVars();
 }
 
 // Cambiar un producto del carrito
@@ -91,15 +81,7 @@ if (isset($_POST['productId']) && isset($_POST['quantity'])) {
   // Verifica si hay suficiente stock
   $maxQuantity = $obj->checkStock($conn, $quantity, $productId);
   $_SESSION['cart'][$productId]['quantity'] = $maxQuantity;
-  if (isset($_SESSION['cartClient'])) {
-    unset($_SESSION['actualQuantity']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['cartClient']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['totalCart']);
-    unset($_SESSION['creditAvailable']);
-    unset($_SESSION['repplyNIP']);
-  }
+  resetSessionVars();
 }
 
 // Eliminar un producto del carrito
@@ -108,22 +90,14 @@ if (isset($_POST['delete_from_cart'])) {
   if (isset($_SESSION['cart'][$productId])) {
     unset($_SESSION['cart'][$productId]);
   }
-  if (isset($_SESSION['cartClient'])) {
-    unset($_SESSION['actualQuantity']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['cartClient']);
-    unset($_SESSION['creditToUse']);
-    unset($_SESSION['totalCart']);
-    unset($_SESSION['creditAvailable']);
-    unset($_SESSION['repplyNIP']);
-  }
+  resetSessionVars();
 }
 
 if (isset($_POST['clientId'])) {
   $_SESSION['creditAvailable'] = 0;
   $_SESSION['actualQuantity'] = 0;
   $_SESSION['creditToUse']  = 0;
-  unset($_SESSION['repplyNIP']);
+  $_SESSION['repplyNIP'] = false;
   $_SESSION['cartClient'] = $_POST['clientId'];
 }
 
@@ -148,24 +122,30 @@ if (isset($_POST['validate_NIP'])) {
   $stmt->execute();
   $result = $stmt->get_result();
   $client = $result->fetch_object();
-
   $currentNIP = $_POST['clientNIP'];
   if (password_verify($currentNIP, $client->clientNIP)) {
-    unset($_SESSION['repplyNIP']);
-    try {
-      $obj2->createClientReceipt($conn);
-      if (mysqli_affected_rows($conn) > 0) {
-          header("Location: clientReceipt.php");
-      } else {
-        $error_modal = true;
-        $errormsg = 'Ocurrio un error';
-      }
-    } catch (Exception $e) {
-      $error_modal = true;
-      $errormsg = $e->getMessage();
-    }
-  } else {
     $_SESSION['repplyNIP'] = true;
+  } else {
+    $_SESSION['repplyNIP'] = false;
+  }
+  $_SESSION['TryrepplyNIP'] = true;
+}
+
+if (isset($_POST['finishShopping'])) {
+  try {
+    $obj2->createClientReceipt($conn);
+    if (mysqli_affected_rows($conn) > 0) {
+      header("Location: clientReceipt.php");
+    } else {
+      $error_modal = true;
+      $errormsg = 'Ocurrio un error';
+    }
+  } catch (Exception $e) {
+    $error_modal = true;
+    $errormsg = $e->getMessage();
+  } finally {
+    resetSessionVars();
+    unset($_SESSION['cart']);
   }
 }
 
@@ -521,6 +501,11 @@ include "templates/footer.php"; ?>
         $.get('templates/cart.php', function(data) {
           var newContent = $(data).find('.repplyNIPM').html();
           $('#cart2 .repplyNIPM').html(newContent);
+        });
+        // Actualiza el contenido del modal con la información del carrito actualizada
+        $.get('templates/cart.php', function(data) {
+          var newContent = $(data).find('.modal-footer-cart2').html();
+          $('#cart2 .modal-footer-cart2').html(newContent);
         });
       }
     });

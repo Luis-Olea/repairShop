@@ -58,3 +58,23 @@ CREATE TABLE supppaymentproducts (
    FOREIGN KEY (supppaymentId) REFERENCES supppayments (paymentId) ON DELETE CASCADE,
    FOREIGN KEY (suppProductId) REFERENCES products (productId) ON DELETE CASCADE
 );
+CREATE TABLE clientReceipt (
+	cReceiptId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	cReceiptTotal FLOAT NOT NULL,
+    cReceiptChange FLOAT NOT NULL,
+    cReceiptAmount FLOAT NOT NULL,
+    cReceiptCreditAmount FLOAT NOT NULL,
+	cReceiptDate DATETIME NOT NULL,
+	cReceiptClientId INTEGER NOT NULL,
+    cReceiptUserId INTEGER NOT NULL,
+    FOREIGN KEY (cReceiptClientId) REFERENCES clients(clientId),
+    FOREIGN KEY (cReceiptUserId) REFERENCES users(userId)
+);
+CREATE TABLE clientReceiptProducts (
+   cReceiptId INTEGER NOT NULL,
+   cReceiptProductId INTEGER NOT NULL,
+   cReceiptPrice FLOAT NOT NULL,
+   cReceiptQuantity INTEGER NOT NULL,
+   FOREIGN KEY (cReceiptId) REFERENCES clientreceipt (cReceiptId) ON DELETE CASCADE,
+   FOREIGN KEY (cReceiptProductId) REFERENCES products (productId) ON DELETE CASCADE
+);

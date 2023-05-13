@@ -16,7 +16,7 @@ class clientReceiptClass
         $currentTime = date('Y-m-d H:i:s');
         $sql = "INSERT INTO clientreceipt (cReceiptTotal, cReceiptChange, cReceiptAmount, cReceiptCreditAmount, cReceiptDate, cReceiptClientId, cReceiptUserId) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ddddsii", $_SESSION['totalCart'] , $change , $_SESSION['actualQuantity'] , $_SESSION['creditToUse'] ,$currentTime, $_SESSION['cartClient'], $currentUser);
+        $stmt->bind_param("ddddsii", $_SESSION['totalCart'], $change, $_SESSION['actualQuantity'], $_SESSION['creditToUse'], $currentTime, $_SESSION['cartClient'], $currentUser);
         $stmt->execute();
         $clientReceiptId = $conn->insert_id;
         foreach ($_SESSION['cart'] as $product_id => $item) {
@@ -28,13 +28,18 @@ class clientReceiptClass
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("iidd", $clientReceiptId, $idProduct, $productPrice, $quantity);
                 $stmt->execute();
-
             } catch (Exception $e) {
-            
-            } 
+            }
+            try {
+                $sql = "UPDATE products SET productQuantity = productQuantity - ? WHERE productId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ii", $quantity, $idProduct);
+                $stmt->execute();
+            } catch (Exception $e) {
+            }
         }
         try {
-            $sql = "UPDATE clients SET clientDue = clientDue + " .$_SESSION['creditToUse']. " WHERE clientId = '" .$_SESSION['cartClient']. "' ";
+            $sql = "UPDATE clients SET clientDue = clientDue + " . $_SESSION['creditToUse'] . " WHERE clientId = '" . $_SESSION['cartClient'] . "' ";
             $conn->query($sql);
         } catch (Exception $e) {
         }
