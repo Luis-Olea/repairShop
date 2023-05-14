@@ -1,10 +1,6 @@
 <?php
 require 'conection.php';
 session_start();
-
-
-var_dump($_SESSION['csrf_token']);
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verificar token CSRF
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {

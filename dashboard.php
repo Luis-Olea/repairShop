@@ -138,7 +138,7 @@ include('layouts/sidebar.php'); ?>
         <div class="col" style="width: 100%;">
             <div class="card" style="width: 100%;">
                 <div class="card-header" style="text-align:middle;">
-                    <h3 class="card-title">Ventas del mes</h3>
+                    <h3 class="card-title">Ventas</h3>
                 </div>
                 <?php
                 // Llamar a la función salesPerDay

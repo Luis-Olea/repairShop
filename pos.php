@@ -19,6 +19,28 @@ try {
   $errormsg = $e->getMessage();
 }
 
+function printPDF() {
+  try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $mpdf = new \Mpdf\Mpdf();
+    // Ejecuta el código PHP para generar el contenido HTML
+    ob_start();
+    include 'templateTicket.php'; // Aquí debes poner la ruta al archivo que contiene el código PHP
+    $html = ob_get_clean();
+    // Agrega el código CSS desde un archivo externo
+    $stylesheet = file_get_contents('stylesheet/bill.css');
+    $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
+    // Agrega el contenido HTML al archivo PDF
+    $mpdf->WriteHTML($html);
+    // Genera y muestra el archivo PDF
+    $route = 'data/pdf/nota.pdf';
+    $mpdf->Output($route, 'F');
+  }  catch (Exception $e) {
+    return $e->getMessage();
+  } 
+  return TRUE;
+}
+
 function resetSessionVars()
 {
   ///Sirve para comprobar si se realizo un cambio en el carrito y si ya se elegio un cliente.
@@ -137,8 +159,13 @@ if (isset($_POST['finishShopping'])) {
   try {
     $repply = $obj2->createClientReceipt($conn);
     if ($repply == TRUE) {
-      //header("Location: pos.php");
-      $correct_modal = true;
+      $repplyPDF = printPDF();
+      if ($repplyPDF != TRUE) {
+        $error_modal = true;
+        $errormsg = $repplyPDF;
+      } else {
+        $correct_modal = true;
+      }
     } else {
       $error_modal = true;
       $errormsg = $repply;
@@ -529,10 +556,6 @@ include("templates/footer.php"); ?>
   <script>
     $(function() {
       $('#correctBC').modal('show');
-      setTimeout(() => {
-        $('#correctBC').modal('hide');
-        window.location.reload();
-      }, 4000);
     })
   </script>;
 <?php endif; ?>

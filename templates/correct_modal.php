@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <h3>Que tengas buen día</h3>
+                <a class="btn btn-primary" href="data/pdf/nota.pdf" target="_blank">Ver archivo PDF</a>
             </div>
         </div>
     </div>

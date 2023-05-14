@@ -8,16 +8,8 @@
    font-family: "Poppins", sans-serif;
  }
 
-body {
-    margin: 10px;
-}
-
 .container {
     width: 100%;
-    border-color: black;
-    border-radius: 5px;
-    border-width: 5px;
-    border-style: solid;
 }
 
 .title {
