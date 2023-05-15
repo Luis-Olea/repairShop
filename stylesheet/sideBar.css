@@ -77,7 +77,12 @@ body {
  .sidebar-content .list {
    list-style: none;
  }
- 
+ .notification-link {
+  align-items:center;
+  margin-right: 14px;
+  font-size: 35px;
+  color: #707070;
+ }
  .list .nav-sb-link {
    display: flex;
    align-items: center;

@@ -4,6 +4,11 @@ if (!isset($_SESSION['logged'])) {
   header('location: index.php');
 }
 
+if ($_SESSION['roleId'] == 2) {
+  header('Location: secundaryDashboard.php');
+  exit;
+}
+
 require('db/conection.php');
 require('db/suppPaymentsClass.php');
 
@@ -138,9 +143,14 @@ include("layouts/sidebar.php"); ?>
 <div class="base-users">
   <div class="container-bottom">
     <h3 class="text-center">Pedidos</h3>
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSuppPayment">
-      Agregar
-    </button>
+    <div>
+      <a href="supplierPayment.php" class="btn btn-primary">
+        Ver abonos
+      </a>
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSuppPayment">
+        Crear un pedido
+      </button>
+    </div>
   </div>
 
   <form class="form-search" method="post">
@@ -180,8 +190,8 @@ include("layouts/sidebar.php"); ?>
           </thead>
           <tbody class="table-light">
             <tr align="center">
-              <td><?= $suppPayment->paymentDate ?></td>
-              <td>$<?= $suppPayment->paymentAmount ?></td>
+              <td><?= date("d/m/Y", strtotime($suppPayment->paymentDate)) ?></td>
+              <td>$<?=  number_format($suppPayment->paymentAmount, 2) ?></td>
               <td><?= $supplierP->supplierName ?> <?= $supplierP->supplierLastName ?></td>
               <td><?= $userP->userName ?> <?= $userP->userLastName ?></td>
             </tr>
@@ -200,9 +210,9 @@ include("layouts/sidebar.php"); ?>
             ?>
                 <tr align="center">
                   <td><?= $product->productName ?></td>
-                  <td><?= $product->quantity ?></td>
-                  <td>$<?= $product->purchasePrice ?></td>
-                  <td>$<?= $product->quantity * $product->purchasePrice ?></td>
+                  <td><?= number_format($product->quantity) ?></td>
+                  <td>$<?= number_format($product->purchasePrice, 2) ?></td>
+                  <td>$<?= number_format($product->quantity * $product->purchasePrice, 2) ?></td>
 
                 </tr>
             <?php endwhile;

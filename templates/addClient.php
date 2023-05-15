@@ -49,7 +49,7 @@ if (!isset($_SESSION['logged'])) {
                                 <div class="form-group">
                                     <label class="control-label col-sm">NIP:<span class="red-text-modal">*</span></label>
                                     <div class="col-sm">
-                                        <input class="form-control" placeholder="Solo numeros del 0 al 9" type="password" pattern="[0-9]*" inputmode="numeric" name="clientNIP" minlength="4" maxlength="4" required>
+                                        <input autocomplete="off" class="form-control" placeholder="Solo numeros del 0 al 9" type="password" pattern="[0-9]*" inputmode="numeric" name="clientNIP" minlength="4" maxlength="4" required>
                                     </div>
                                 </div>
                             </div>

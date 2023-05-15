@@ -4,6 +4,11 @@ if (!isset($_SESSION['logged'])) {
   header('location: index.php');
 }
 
+if ($_SESSION['roleId'] == 2) {
+  header('Location: secundaryDashboard.php');
+  exit;
+}
+
 require('db/conection.php');
 require('db/productClass.php');
 
@@ -111,6 +116,13 @@ if (isset($_POST['deleteProduct'])) {
   }
 }
 
+function getNameSupplier($conn, $supplierId) {
+  $sql = "SELECT supplierName, supplierLastName FROM suppliers WHERE supplierId = '". $supplierId ."'";
+  $result = $conn->query($sql);
+  $supplier = $result->fetch_assoc();
+  return $supplier;
+}
+
 if (isset($_POST['searchSuppliers'])) {
   try {
     $sql = "SELECT * FROM products WHERE productName LIKE '%" . $_POST['data'] . "%'  or productBrand LIKE '%" . $_POST['data'] . "%' or productCategory LIKE '%" . $_POST['data'] . "%' or productCodeBar LIKE '%" . $_POST['data'] . "%' ";
@@ -171,15 +183,16 @@ include('layouts/sidebar.php'); ?>
       </thead>
       <tbody class="table-light">
         <?php try { ?>
-          <?php while ($product = mysqli_fetch_object($products)) : ?>
+          <?php while ($product = mysqli_fetch_object($products)) : 
+            $supplier = getNameSupplier($conn, $product->productSupplier)?>
             <tr align="center" style="vertical-align:middle;">
               <td><?= $product->productName ?></td>
               <td class="d-none d-md-table-cell"><?= $product->productBrand ?></td>
               <td class="d-none d-md-table-cell"><?= $product->productDescription ?></td>
               <td class="d-none d-md-table-cell"><?= $product->productCategory ?></td>
-              <td><?= $product->productQuantity ?></td>
-              <td>$<?= $product->productPrice ?></td>
-              <td class="d-none d-md-table-cell"><?= $product->productSupplier ?></td>
+              <td><?= number_format($product->productQuantity) ?></td>
+              <td>$<?= number_format($product->productPrice, 2) ?></td>
+              <td class="d-none d-md-table-cell"><?= $supplier['supplierName'] . ' ' . $supplier['supplierLastName'] ?></td>
               <td class="d-none d-md-table-cell"><?= $product->productCodebar ?></td>
               <td class="d-none d-md-table-cell"><img class="img-table" src="data/images/<?=$product->productImage ?>"></td>
               <td>

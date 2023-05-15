@@ -4,6 +4,12 @@ if (!isset($_SESSION['logged'])) {
   header('location: index.php');
 }
 
+if ($_SESSION['roleId'] == 3) {
+  header('Location: secundaryDashboard.php');
+  exit;
+}
+
+
 require('db/conection.php');
 require('db/clientClass.php');
 
@@ -152,8 +158,8 @@ include('layouts/sidebar.php'); ?>
               <td class="d-none d-md-table-cell"><?= $client->clientAddress ?></td>
               <td><?= $client->clientCellphone ?></td>
               <td class="d-none d-md-table-cell"><?= $client->clientEmail ?></td>
-              <td><?= $client->clientDue ?></td>
-              <td class="d-none d-md-table-cell"><?= $client->clientCreditLimit ?></td>
+              <td>$<?= number_format($client->clientDue, 2) ?></td>
+              <td class="d-none d-md-table-cell">$<?= number_format($client->clientCreditLimit, 2) ?></td>
               <td>
                 <form method="post">
                   <input type="submit" class="btn btn-primary" name="getIdUpdateC" value="Editar">

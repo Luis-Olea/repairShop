@@ -108,8 +108,8 @@ if (!isset($_SESSION['logged'])) {
                                                                     <input type="number" class="inputPurchasePrice" value="<?= $purchasePrice ?>">
                                                                 </div>
                                                             </td>
-                                                            <td><?=$product->productPrice?></td>
-                                                            <td><?= $subtotal ?></td>
+                                                            <td>$<?= number_format($product->productPrice, 2)?></td>
+                                                            <td>$<?= number_format($subtotal, 2) ?></td>
                                                         </tr>
                                                 <?php endif;
                                                 endforeach
@@ -117,7 +117,7 @@ if (!isset($_SESSION['logged'])) {
                                                 <tr style='vertical-align:middle;'>
                                                     <?php $_SESSION['totalPaymentSupp'] = $total ?>
                                                     <td colspan='6'>Total</td>
-                                                    <td align='center'><?= $total ?></td>
+                                                    <td align='center'>$<?= number_format($total, 2) ?></td>
                                                 </tr>
                                             </thead>
                                         </table>

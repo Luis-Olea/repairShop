@@ -33,11 +33,20 @@ $user = $_SESSION['user'];
                                     <span class="input-group-text">Celular<span class="red-text-modal">*</span></span>
                                     <input class="form-control" value="<?= $user->userCellphone ?>" type="number" name="userCellphone">
                                 </div>
-                                <div class="input-group mb">
+                                <div class="input-group mb-4">
                                     <span class="input-group-text">Correo<span class="red-text-modal">*</span></span>
                                     <input class="form-control" value="<?= $user->userEmail ?>" type="email" name="userEmail" required>
                                     <input type="hidden" value="<?= $user->userId ?>" name="userId">
                                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+                                </div>
+                                <div class="input-group mb">
+                                    <label class="input-group-text" for="roles">Rol<span class="red-text-modal">*</span></label>
+                                    <select class="form-select" id="roles" name="userRoleId" required>
+                                        <option value="<?= $user->userRoleId ?>"selected>No cambiar</option>
+                                        <option value="1">Administrador</option>
+                                        <option value="2">Vendedor</option>
+                                        <option value="3">Almacen</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

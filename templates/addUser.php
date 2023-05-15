@@ -30,9 +30,18 @@
                                     <span class="input-group-text">Correo<span class="red-text-modal">*</span></span>
                                     <input class="form-control" type="email" name="email" required>
                                 </div>
+                                <div class="input-group mb-4">
+                                    <label class="input-group-text" for="roles">Rol<span class="red-text-modal">*</span></label>
+                                    <select class="form-select" id="roles" name="userRoleId" required>
+                                        <option selected>Seleccione un rol...</option>
+                                        <option value="1">Administrador</option>
+                                        <option value="2">Vendedor</option>
+                                        <option value="3">Almacen</option>
+                                    </select>
+                                </div>
                                 <div class="input-group">
                                     <span class="input-group-text">Contraseña<span class="red-text-modal">*</span></span>
-                                    <input class="form-control" type="password" name="password" required>
+                                    <input class="form-control" autocomplete="off" type="password" name="password" required>
                                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
                                 </div>
                             </div>

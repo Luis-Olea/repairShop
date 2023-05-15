@@ -64,15 +64,15 @@ if (!isset($_SESSION['logged'])) {
                                                         <button type="submit" name="delete_from_cart" class="btn btn-danger btn-sm">X</button>
                                                     </form>
                                                 </td>
-                                                <td>$<?= $price ?></td>
-                                                <td>$<?= $subtotal ?></td>
+                                                <td>$<?= number_format($price, 2) ?></td>
+                                                <td>$<?= number_format($subtotal, 2) ?></td>
                                             </tr>
                                     <?php endif;
                                     endforeach
                                     ?>
                                     <tr style='vertical-align:middle;'>
                                         <td colspan='5'>Total</td>
-                                        <td align='center'>$<?= $total ?></td>
+                                        <td align='center'>$<?= number_format($total, 2) ?></td>
                                         <?php $_SESSION['totalCart'] = $total; ?>
                                     </tr>
                                 </thead>
@@ -150,15 +150,15 @@ if (!isset($_SESSION['logged'])) {
                                         <?php if ($client->clientCreditLimit > 0) : ?>
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text" id="basic-addon1">Limite de credito</span>
-                                                <span class="form-control">$<?= $client->clientCreditLimit ?></span>
+                                                <span class="form-control">$<?= number_format($client->clientCreditLimit, 2) ?></span>
                                             </div>
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text" id="basic-addon1">Deuda</span>
-                                                <span class="form-control">$<?= $client->clientDue ?></span>
+                                                <span class="form-control">$<?= number_format($client->clientDue, 2) ?></span>
                                             </div>
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text" id="basic-addon1">Credito disponible</span>
-                                                <span class="form-control">$<?= $client->clientCreditLimit - $client->clientDue ?></span>
+                                                <span class="form-control">$<?= number_format(($client->clientCreditLimit - $client->clientDue), 2) ?></span>
                                             </div>
                                         <?php
                                             $_SESSION['creditAvailable'] = $client->clientCreditLimit - $client->clientDue;
@@ -170,7 +170,7 @@ if (!isset($_SESSION['logged'])) {
                                     <div class="form-group" style="margin-top: 15px;">
                                         <div class="input-group mb-3">
                                             <span class="input-group-text" id="basic-addon1">Total a pagar</span>
-                                            <span class="form-control">$<?= $_SESSION['totalCart'] ?></span>
+                                            <span class="form-control">$<?= number_format($_SESSION['totalCart'], 2) ?></span>
                                         </div>
                                         <?php if ($_SESSION['creditAvailable'] > 0) : ?>
                                             <div class="input-group mb-3">
@@ -181,12 +181,12 @@ if (!isset($_SESSION['logged'])) {
                                         <?php if ($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse'] > 0) : ?>
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text" id="basic-addon1">Faltante</span>
-                                                <span class="form-control">$<?= $_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse'] ?></span>
+                                                <span class="form-control">$<?= number_format($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse'], 2) ?></span>
                                             </div>
                                         <?php else : ?>
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text" id="basic-addon1">Cambio</span>
-                                                <span class="form-control">$<?= ($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse']) - 2 * ($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse']) ?></span>
+                                                <span class="form-control">$<?= number_format(($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse']) - 2 * ($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse']), 2) ?></span>
                                             </div>
                                         <?php endif; ?>
                                         <div class="input-group mb-3">
@@ -203,13 +203,13 @@ if (!isset($_SESSION['logged'])) {
                                                     </div>
                                                     <div class="input-group mb-3">
                                                         <span class="input-group-text" id="basic-addon1">Credito a utilizar</span>
-                                                        <span class="form-control">$<?= $_SESSION['creditToUse'] ?></span>
+                                                        <span class="form-control">$<?= number_format($_SESSION['creditToUse'], 2) ?></span>
                                                     </div>
                                                     <h5>Validar venta</h5>
                                                     <form method="post" class="validateNIP">
                                                         <div class="input-group mb-3">
                                                             <span class="input-group-text" id="basic-addon1">Ingrese su NIP</span>
-                                                            <input class="form-control" placeholder="Ingrese su NIP de 4 digitos" type="password" pattern="[0-9]*" inputmode="numeric" name="clientNIP" minlength="4" maxlength="4" required>
+                                                            <input class="form-control" placeholder="Ingrese su NIP de 4 digitos" autocomplete="off" type="password" pattern="[0-9]*" inputmode="numeric" name="clientNIP" minlength="4" maxlength="4" required>
                                                             <button class="btn btn-success" type="submit" id="button-addon2">Validar</button>
                                                         </div>
                                                     </form>

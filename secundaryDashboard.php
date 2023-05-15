@@ -4,11 +4,6 @@ if (!isset($_SESSION['logged'])) {
     header('location: index.php');
 }
 
-if ($_SESSION['roleId'] != 1) {
-    header('Location: secundaryDashboard.php');
-    exit;
-}
-
 date_default_timezone_set('America/Mexico_City');
 
 //<!-- HTML HEADER -->
@@ -27,34 +22,26 @@ function getBestSellerP($conn)
 
 function sellsDay($conn)
 {
-    $sql = "SELECT SUM(cReceiptTotal) AS daily_sales FROM clientreceipts WHERE DATE(cReceiptDate) = CURDATE()";
-    $result = $conn->query($sql);
+    $userId = $_SESSION['userId'];
+    $sql = "SELECT SUM(cReceiptTotal) AS daily_sales FROM clientreceipts WHERE DATE(cReceiptDate) = CURDATE() AND cReceiptUserId = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $sellsToday = $result->fetch_assoc();
     return $sellsToday;
 }
 
-function expensesToday($conn)
-{
-    $sql = "SELECT SUM(paymentAmount) AS daily_expenses FROM supppayments WHERE DATE(paymentDate) = CURDATE()";
-    $result = $conn->query($sql);
-    $expenseToday = $result->fetch_assoc();
-    return $expenseToday;
-}
-
 function sellsMonth($conn)
 {
-    $sql = "SELECT SUM(cReceiptTotal) AS monthly_sales FROM clientreceipts WHERE MONTH(cReceiptDate) = MONTH(CURDATE()) AND YEAR(cReceiptDate) = YEAR(CURDATE())";
-    $result = $conn->query($sql);
+    $userId = $_SESSION['userId'];
+    $sql = "SELECT SUM(cReceiptTotal) AS monthly_sales FROM clientreceipts WHERE MONTH(cReceiptDate) = MONTH(CURDATE()) AND YEAR(cReceiptDate) = YEAR(CURDATE()) AND cReceiptUserId = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $sellMonth = $result->fetch_assoc();
     return $sellMonth;
-}
-
-function expensesMonth($conn)
-{
-    $sql = "SELECT SUM(paymentAmount) AS monthly_expenses FROM supppayments WHERE MONTH(paymentDate) = MONTH(CURDATE()) AND YEAR(paymentDate) = YEAR(CURDATE())";
-    $result = $conn->query($sql);
-    $expenseMonth = $result->fetch_assoc();
-    return $expenseMonth;
 }
 
 function nameUser($conn)
@@ -68,33 +55,14 @@ function nameUser($conn)
     return $user;
 }
 
-function stonksToday($conn)
-{
-    $currentTime = date('Y-m-d');
-    $sql = "SELECT SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientreceiptproducts JOIN clientreceipts ON clientreceiptproducts.cReceipReceiptId = clientreceipts.cReceiptId JOIN products ON clientreceiptproducts.cReceiptProductId = products.productId WHERE DATE(cReceiptDate) = '" . $currentTime . "';";
-    $result = $conn->query($sql);
-    $stonkToday = $result->fetch_assoc();
-    return $stonkToday;
-}
-
-function stonksMonth($conn)
-{
-    $sql = "SELECT YEAR(cReceiptDate) AS year, MONTH(cReceiptDate) AS month, SUM((cReceiptPrice - productPricePurchase) * cReceiptQuantity) AS total_profit FROM clientreceiptproducts JOIN clientreceipts ON clientreceiptproducts.cReceipReceiptId = clientreceipts.cReceiptId JOIN products ON clientreceiptproducts.cReceiptProductId = products.productId GROUP BY year, month ORDER BY year, month;";
-    $result = $conn->query($sql);
-    $stonkMonth = array();
-    while ($row = $result->fetch_assoc()) {
-        $stonkMonth[] = $row;
-    }
-    return $stonkMonth;
-}
-
 function salesPerDay($conn)
 {
     $year = date('Y');
     $month = date('m');
-    $query = "SELECT DAY(cReceiptDate) AS day, SUM(cReceiptPrice * cReceiptQuantity) AS total_sales FROM clientreceiptproducts JOIN clientreceipts ON clientreceiptproducts.cReceipReceiptId = clientreceipts.cReceiptId WHERE YEAR(cReceiptDate) = ? AND MONTH(cReceiptDate) = ? GROUP BY day ORDER BY day;";
+    $userId = $_SESSION['userId'];
+    $query = "SELECT DAY(cReceiptDate) AS day, SUM(cReceiptPrice * cReceiptQuantity) AS total_sales FROM clientreceiptproducts JOIN clientreceipts ON clientreceiptproducts.cReceipReceiptId = clientreceipts.cReceiptId WHERE YEAR(cReceiptDate) = ? AND MONTH(cReceiptDate) = ? AND cReceiptUserId = ? GROUP BY day ORDER BY day;";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('ii', $year, $month);
+    $stmt->bind_param("iii", $year, $month, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -126,10 +94,13 @@ include('layouts/sidebar.php'); ?>
     </div>
     <div class="row row-cols-1 row-cols-md-2 g-4" style="margin: 0 5px 10px;">
 
+
+    <?php if ($_SESSION['roleId'] == 2) : ?>
+
         <div class="col" style="width: 100%;">
             <div class="card" style="width: 100%;">
                 <div class="card-header" style="text-align:middle;">
-                    <h3 class="card-title">Ventas</h3>
+                    <h3 class="card-title">Tus ventas</h3>
                 </div>
                 <?php
                 // Llamar a la función salesPerDay
@@ -196,36 +167,6 @@ include('layouts/sidebar.php'); ?>
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Ganancias de hoy</h3>
-                </div>
-                <div class="card-body">
-                    <?php $stonksToday = stonksToday($conn); ?>
-                    <h5 class="card-text">$<?= number_format($stonksToday['total_profit'], 2) ?></h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Ganancias mensuales</h3>
-                </div>
-                <div class="card-body">
-                    <?php
-                    $stonksMonth = stonksMonth($conn);
-                    $total_profit = 0;
-                    foreach ($stonksMonth as $month) {
-                        $total_profit += $month['total_profit'];
-                    }
-                    ?>
-                    <h5 class="card-text">$ <?= number_format($total_profit, 2) ?></h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
                     <h3 class="card-title">Ventas de hoy</h3>
                 </div>
                 <div class="card-body">
@@ -247,29 +188,7 @@ include('layouts/sidebar.php'); ?>
             </div>
         </div>
 
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Gastos de hoy</h3>
-                </div>
-                <div class="card-body">
-                    <?php $expenseToday = expensesToday($conn); ?>
-                    <h5 class="card-text">$<?= number_format($expenseToday['daily_expenses'], 2) ?></h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Gastos del mes</h3>
-                </div>
-                <div class="card-body">
-                    <?php $expenseMonth = expensesMonth($conn); ?>
-                    <h5 class="card-text">$<?= number_format($expenseMonth['monthly_expenses'], 2) ?></h5>
-                </div>
-            </div>
-        </div>
+        <?php endif; ?>
 
         <div class="col" style="width: 100%;">
             <div class="card">

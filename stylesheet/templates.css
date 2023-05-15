@@ -159,3 +159,30 @@ input[type="number"].inputCartQuantity::-webkit-outer-spin-button {
   justify-content: center;
   align-items: center;
 }
+
+.container-center-conf {
+
+  border: 5px;
+  border-color: black;
+  margin: 10px;
+
+}
+
+.base-conf {
+  margin-top: 80px;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+}
+
+.button-right-conf {
+  text-align: right!important;
+}
+
+.alert-bell {
+  width: 100%;
+}

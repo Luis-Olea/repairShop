@@ -4,6 +4,11 @@ if (!isset($_SESSION['logged'])) {
   header('location: index.php');
 }
 
+if ($_SESSION['roleId'] == 2) {
+  header('Location: secundaryDashboard.php');
+  exit;
+}
+
 require('db/conection.php');
 require('db/supplierClass.php');
 
@@ -154,7 +159,7 @@ include('layouts/sidebar.php'); ?>
               <td><?= $supplier->supplierCellphone ?></td>
               <td class="d-none d-md-table-cell"><?= $supplier->supplierEmail ?></td>
               <td class="d-none d-md-table-cell"><?= $supplier->supplierBrand ?></td>
-              <td>$<?= $supplier->supplierDue ?></td>
+              <td>$<?= number_format($supplier->supplierDue, 2) ?></td>
               <td>
                 <form method="post">
                   <input type="submit" class="btn btn-primary" name="getIdUpdateS" value="Editar">

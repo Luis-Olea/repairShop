@@ -5,6 +5,11 @@ if (!isset($_SESSION['logged'])) {
   exit;
 }
 
+if ($_SESSION['roleId'] != 1) {
+  header('Location: secundaryDashboard.php');
+  exit;
+}
+
 // Verificar token CSRF
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -95,6 +100,17 @@ if (isset($_POST['deleteUser'])) {
   }
 }
 
+function getRolName($conn, $rolId) {
+  $sql = "SELECT roleName FROM roles WHERE roleId = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $rolId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $row = $result->fetch_assoc();
+  return $row['roleName'];
+}
+
+
 if (isset($_POST['searchUsers'])) {
   try {
     $sql = "SELECT * FROM users WHERE userName LIKE '%" . $_POST['userName'] . "%'  or userLastName LIKE '%" . $_POST['userName'] . "%' or userCellphone LIKE '%" . $_POST['userName'] . "%' or userEmail LIKE '%" . $_POST['userName'] . "%' ";
@@ -111,7 +127,6 @@ if (isset($_POST['searchUsers'])) {
     $errormsg = $e->getMessage();
   }
 }
-
 
 ///<!-- header -->
 include('templates/header.php');
@@ -148,6 +163,7 @@ include('layouts/sidebar.php'); ?>
           <th class="d-none d-md-table-cell">Dirección</th>
           <th>Telefono</th>
           <th class="d-none d-md-table-cell">Correo</th>
+          <th>Rol</th>
           <th>Editar</th>
           <th class="d-none d-md-table-cell">Eliminar</th>
         </tr>
@@ -162,6 +178,7 @@ include('layouts/sidebar.php'); ?>
               <td class="d-none d-md-table-cell"><?= $user->userAddress ?></td>
               <td><?= $user->userCellphone ?></td>
               <td class="d-none d-md-table-cell"><?= $user->userEmail ?></td>
+              <td><?= getRolName($conn, $user->userRoleId) ?></td>
               <td>
                 <form method="post">
                   <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">

@@ -4,7 +4,7 @@ class usersClass
     function createUser($conn)
     {
         $passwordHash = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $sql = "INSERT INTO users (userName, userLastName, userAddress, userCellphone, userEmail, userPassword) " . "VALUES('" . $_POST['name'] . "','" . $_POST['last-name'] . "','" . $_POST['address'] . "','" . $_POST['mobileno'] . "','" . $_POST['email'] . "','" . $passwordHash . "')";
+        $sql = "INSERT INTO users (userName, userLastName, userAddress, userCellphone, userEmail, userPassword, userRoleId) " . "VALUES('" . $_POST['name'] . "','" . $_POST['last-name'] . "','" . $_POST['address'] . "','" . $_POST['mobileno'] . "','" . $_POST['email'] . "','" . $passwordHash . "', '" . $_POST['userRoleId'] . "')";
         return $conn->query($sql);
     }
     function getUsers($conn)
@@ -24,7 +24,7 @@ class usersClass
     }
     function updateUser($conn)
     {
-        $sql = "UPDATE users SET userName='" . $_POST['userName'] . "',userLastName='" . $_POST['userLastName'] . "',userAddress='" . $_POST['userAdress'] . "', userCellphone='" . $_POST['userCellphone'] . "',userEmail='" . $_POST['userEmail'] . "' WHERE userId = '" . $_POST['userId'] . "' ";
+        $sql = "UPDATE users SET userName='" . $_POST['userName'] . "',userLastName='" . $_POST['userLastName'] . "',userAddress='" . $_POST['userAdress'] . "', userCellphone='" . $_POST['userCellphone'] . "',userEmail='" . $_POST['userEmail'] . "',userRoleId='" .$_POST['userRoleId']. "' WHERE userId = '" . $_POST['userId'] . "' ";
         return $conn->query($sql);
     }
 }

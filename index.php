@@ -1,9 +1,23 @@
 <?php
 session_start();
+
+require('db/conection.php');
+
 // Generar token CSRF
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
+function getPreferences($conn) {
+    $sql = "SELECT storeName FROM preferences WHERE storeId = 1";
+    $result = $conn->query($sql);
+    $storeName = $result->fetch_assoc();
+    return $storeName;
+}
+
+$preferences = getPreferences($conn);
+$_SESSION['storeName'] = $preferences['storeName'];
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -16,8 +30,9 @@ if (empty($_SESSION['csrf_token'])) {
     <link rel="stylesheet" href="stylesheet/login.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,600,0,0" />
 
-    <title>Coravi</title>
+    <title><?= $_SESSION['storeName'] ?></title>
 
+    <link rel="shortcut icon" href="data/default/logo.png">
 </head>
 
 <body>
@@ -25,10 +40,10 @@ if (empty($_SESSION['csrf_token'])) {
     <div class="login-card-container">
         <div class="login-card">
             <div class="login-card-logo">
-                <img src="images/logo.png" alt="logo">
+                <img src="data/default/logo.png" alt="logo">
             </div>
             <div class="login-card-header">
-                <h1>Coravi</h1>
+                <h1><?= $_SESSION['storeName'] ?></h1>
                 <?php
                 if (isset($_SESSION['error'])) {
                     echo "<font color='red'><h3>" . $_SESSION['error'] . "</h3>";

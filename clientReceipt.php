@@ -4,10 +4,17 @@ if (!isset($_SESSION['logged'])) {
   header('location: index.php');
 }
 
+if ($_SESSION['roleId'] == 3) {
+  header('Location: secundaryDashboard.php');
+  exit;
+}
+
+
 require('db/conection.php');
 require('db/clientReceiptClass.php');
 
 $error_modal = false;
+$correct_modal = false;
 
 try {
   $obj = new clientReceiptClass();
@@ -16,24 +23,59 @@ try {
   $errormsg = $e->getMessage();
 }
 
+function printPDFTReceipt()
+{
+  try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $mpdf = new \Mpdf\Mpdf();
+    // Ejecuta el código PHP para generar el contenido HTML
+    ob_start();
+    include 'templateTicket.php'; // Aquí debes poner la ruta al archivo que contiene el código PHP
+    $html = ob_get_clean();
+    // Agrega el código CSS desde un archivo externo
+    $stylesheet = file_get_contents('stylesheet/bill.css');
+    $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
+    // Agrega el contenido HTML al archivo PDF
+    $mpdf->WriteHTML($html);
+    // Genera y muestra el archivo PDF
+    $route = 'data/pdf/nota.pdf';
+    $mpdf->Output($route, 'F');
+  } catch (Exception $e) {
+    return $e->getMessage();
+  }
+  return TRUE;
+}
+
+if (isset($_POST['generatePDF'])) {
+  $_SESSION['cReceiptId'] = $_POST['cReceiptId'];
+  $repplyPDF = printPDFTReceipt();
+  if ($repplyPDF != TRUE) {
+    $error_modal = true;
+    $errormsg = $repplyPDF;
+  } else {
+    $correct_modal = true;
+  }
+  unset($_SESSION['cReceiptId']);
+}
+
 if (isset($_POST['searchClientReceipt'])) {
   try {
-      $sql = "SELECT * FROM clientreceipt WHERE creceipttotal LIKE ? OR creceiptdate LIKE ? ORDER BY cReceiptDate DESC";
-      $stmt = $conn->prepare($sql);
-      $data = "%" . $_POST['data'] . "%";
-      $stmt->bind_param("ss", $data, $data);
-      $stmt->execute();
-      $clientReceipts = $stmt->get_result();
+    $sql = "SELECT * FROM clientreceipt WHERE creceipttotal LIKE ? OR creceiptdate LIKE ? OR creceiptid LIKE ? ORDER BY cReceiptDate DESC";
+    $stmt = $conn->prepare($sql);
+    $data = "%" . $_POST['data'] . "%";
+    $stmt->bind_param("sss", $data, $data, $data);
+    $stmt->execute();
+    $clientReceipts = $stmt->get_result();
   } catch (Exception $e) {
-      $error_modal = true;
-      $errormsg = $e->getMessage();
+    $error_modal = true;
+    $errormsg = $e->getMessage();
   }
 } else {
   try {
-      $clientReceipts = $obj->getClientReceipts($conn);
+    $clientReceipts = $obj->getClientReceipts($conn);
   } catch (Exception $e) {
-      $error_modal = true;
-      $errormsg = $e->getMessage();
+    $error_modal = true;
+    $errormsg = $e->getMessage();
   }
 }
 
@@ -44,6 +86,9 @@ include("layouts/sidebar.php"); ?>
 <div class="base-users">
   <div class="container-bottom">
     <h3 class="text-center">Ventas</h3>
+    <a href="clientPayment.php" class="btn btn-primary">
+      Ver abonos
+    </a>
   </div>
 
   <form class="form-search" method="post">
@@ -82,36 +127,43 @@ include("layouts/sidebar.php"); ?>
               <th>Cambio</th>
               <th>Cliente</th>
               <th>Usuario</th>
+              <th>Factura</th>
             </tr>
           </thead>
           <tbody class="table-light">
             <tr align="center">
-              <td><?= $clientReceipt->cReceiptDate ?></td>
-              <td>$<?= $clientReceipt->cReceiptTotal ?></td>
-              <td>$<?= $clientReceipt->cReceiptCreditAmount ?></td>
-              <td>$<?= $clientReceipt->cReceiptAmount ?></td>
-              <td>$<?= $clientReceipt->cReceiptChange ?></td>
+              <td><?=  date("H:i:s - d/m/Y", strtotime($clientReceipt->cReceiptDate)) ?></td>
+              <td>$<?= number_format($clientReceipt->cReceiptTotal, 2) ?></td>
+              <td>$<?= number_format($clientReceipt->cReceiptCreditAmount, 2) ?></td>
+              <td>$<?= number_format($clientReceipt->cReceiptAmount, 2) ?></td>
+              <td>$<?= number_format($clientReceipt->cReceiptChange, 2) ?></td>
               <td><?= $clientP->clientName ?> <?= $clientP->clientLastName ?></td>
               <td><?= $userP->userName ?> <?= $userP->userLastName ?></td>
+              <td>
+                <form method="post">
+                  <input type="hidden" name="cReceiptId" value="<?= $clientReceipt->cReceiptId  ?>">
+                  <button class="btn btn-secondary" type="submit" name="generatePDF">Generar pdf</button>
+                </form>
+              </td>
             </tr>
 
             <tr align="center" class="active">
-              <th colspan="4">Producto</th>
+              <th colspan="5">Producto</th>
               <th>Cantidad</th>
               <th>Precio</th>
               <th>Subtotal</th>
             </tr>
             <?php
             try {
-              $sql = "SELECT products.*, clientreceiptproducts.cReceiptPrice, clientreceiptproducts.cReceiptQuantity FROM clientreceiptproducts JOIN products ON clientreceiptproducts.cReceiptProductId = products.productId WHERE clientreceiptproducts.cReceiptId = '" . $clientReceipt->cReceiptId . "'";
+              $sql = "SELECT products.*, clientreceiptproducts.cReceiptPrice, clientreceiptproducts.cReceiptQuantity FROM clientreceiptproducts JOIN products ON clientreceiptproducts.cReceiptProductId = products.productId WHERE clientreceiptproducts.cReceipReceiptId = '" . $clientReceipt->cReceiptId . "'";
               $products = $conn->query($sql);
               while ($product = mysqli_fetch_object($products)) :
             ?>
                 <tr align="center">
-                  <td colspan="4"><?= $product->productName ?></td>
-                  <td><?= $product->cReceiptQuantity ?></td>
-                  <td>$<?= $product->cReceiptPrice ?></td>
-                  <td>$<?= $product->cReceiptQuantity * $product->cReceiptPrice ?></td>
+                  <td colspan="5  "><?= $product->productName ?></td>
+                  <td><?= number_format($product->cReceiptQuantity) ?></td>
+                  <td>$<?= number_format($product->cReceiptPrice, 2) ?></td>
+                  <td>$<?= number_format($product->cReceiptQuantity * $product->cReceiptPrice, 2) ?></td>
                 </tr>
             <?php endwhile;
             } catch (Exception $e) {
@@ -130,13 +182,23 @@ include("layouts/sidebar.php"); ?>
 </div>
 <!-- HTML END BODY -->
 <?php
+include('templates/correct_modalGeneratePDF.php');
+include("templates/error_modal.php");
 include("templates/footer.php");
 ?>
 
+<?php if ($correct_modal) :
+  $correct_modal = false;
+?>
+  <script>
+    $(function() {
+      $('#correctBC').modal('show');
+    })
+  </script>;
+<?php endif; ?>
+
 <?php if ($error_modal) :
   $error_modal = false;
-  ///<!-- Error Modal -->
-  include "templates/error_modal.php";
 ?>
   <script>
     $(function() {

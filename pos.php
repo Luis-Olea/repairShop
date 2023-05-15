@@ -4,12 +4,18 @@ if (!isset($_SESSION['logged'])) {
   header('location: index.php');
 }
 
+if ($_SESSION['roleId'] == 3) {
+  header('Location: secundaryDashboard.php');
+  exit;
+}
+
 require('db/conection.php');
 require('db/productClass.php');
 require('db/clientReceiptClass.php');
 
 $error_modal = false;
 $correct_modal = false;
+$errormsg = NULL;
 
 try {
   $obj = new ProductClass();
@@ -176,6 +182,7 @@ if (isset($_POST['finishShopping'])) {
   } finally {
     resetSessionVars();
     unset($_SESSION['cart']);
+    unset($_SESSION['cReceiptId']);
   }
 }
 
@@ -228,7 +235,7 @@ include("layouts/sidebarPos.php"); ?>
               </div>
               <div class="card-body">
                 <h5 class="card-title"><?= substr($product->productName, 0, 28); ?></h5>
-                <p class="card-text">Marca: <?= $product->productBrand ?><br>Codigo: <?= $product->productCodebar ?><br>Precio: $<?= $product->productPrice ?><br>Pzs: <?= $product->productQuantity ?></p>
+                <p class="card-text">Marca: <?= $product->productBrand ?><br>Codigo: <?= $product->productCodebar ?><br>Precio: $<?= number_format($product->productPrice, 2) ?><br>Pzs: <?= number_format($product->productQuantity) ?></p>
               </div>
               <div class="card-footer">
                 <form method="post" class="addProductCart">

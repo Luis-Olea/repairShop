@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userEmail = $_POST['email'];
     $userPassword = $_POST['password'];
 
-    $sql = "SELECT * FROM users WHERE userEmail = ?";
+    $sql = "SELECT userId, userEmail, userPassword, userRoleId FROM users WHERE userEmail = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $userEmail);
     $stmt->execute();
@@ -24,10 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (password_verify($userPassword, $passwordHash)) {
         $_SESSION['currentEmail'] = $userEmail;
         $_SESSION['logged'] = true;
+        $_SESSION['userId'] = $fila['userId'];
+        $_SESSION['roleId'] = $fila['userRoleId'];
         header("Location: ../dashboard.php");
     } else {
         $_SESSION['error'] = "Credenciales incorrectas";
         header("Location: ../index.php");
-    }
+    }    
 }
 ?>

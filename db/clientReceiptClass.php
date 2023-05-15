@@ -15,7 +15,7 @@ class clientReceiptClass
         }
         $change = ($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse']) - 2 * ($_SESSION['totalCart'] - $_SESSION['actualQuantity'] - $_SESSION['creditToUse']);
         $currentTime = date('Y-m-d H:i:s');
-        $sql = "INSERT INTO clientreceipt (cReceiptTotal, cReceiptChange, cReceiptAmount, cReceiptCreditAmount, cReceiptDate, cReceiptClientId, cReceiptUserId) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO clientreceipts (cReceiptTotal, cReceiptChange, cReceiptAmount, cReceiptCreditAmount, cReceiptDate, cReceiptClientId, cReceiptUserId) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ddddsii", $_SESSION['totalCart'], $change, $_SESSION['actualQuantity'], $_SESSION['creditToUse'], $currentTime, $_SESSION['cartClient'], $currentUser);
         $stmt->execute();
@@ -25,7 +25,7 @@ class clientReceiptClass
             $productPrice = $item['price'];
             $idProduct = $product_id;
             try {
-                $sql = "INSERT INTO clientreceiptproducts (cReceiptId, cReceiptProductId, cReceiptPrice, cReceiptQuantity) VALUES (?, ?, ?, ?)";
+                $sql = "INSERT INTO clientreceiptproducts (cReceipReceiptId, cReceiptProductId, cReceiptPrice, cReceiptQuantity) VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("iidd", $clientReceiptId, $idProduct, $productPrice, $quantity);
                 $stmt->execute();
@@ -47,11 +47,12 @@ class clientReceiptClass
         } catch (Exception $e) {
             return $e;
         }
+        $_SESSION['cReceiptId'] = $clientReceiptId;
         return TRUE;
     }
     function getClientReceipts($conn)
     {
-        $sql = "SELECT * FROM clientreceipt ORDER BY cReceiptDate DESC";
+        $sql = "SELECT * FROM clientreceipts ORDER BY cReceiptDate DESC";
         return $conn->query($sql);
     }
 }

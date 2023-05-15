@@ -1,3 +1,7 @@
+ CREATE TABLE roles (
+   roleId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   roleName VARCHAR(50) NOT NULL
+);
  CREATE TABLE clients (
    clientId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
    clientName VARCHAR(50) NOT NULL,
@@ -26,7 +30,9 @@ CREATE TABLE users (
    userAddress VARCHAR(200) DEFAULT NULL,
    userCellphone VARCHAR(16) DEFAULT NULL,
    userEmail VARCHAR(60) NOT NULL UNIQUE,
-   userPassword VARCHAR(100) NOT NULL
+   userPassword VARCHAR(100) NOT NULL,
+   userRoleId INTEGER NOT NULL,
+   FOREIGN KEY (userRoleId) REFERENCES roles(roleId)
 );
 CREATE TABLE products (
    productId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -58,7 +64,16 @@ CREATE TABLE supppaymentproducts (
    FOREIGN KEY (supppaymentId) REFERENCES supppayments (paymentId) ON DELETE CASCADE,
    FOREIGN KEY (suppProductId) REFERENCES products (productId) ON DELETE CASCADE
 );
-CREATE TABLE clientReceipt (
+CREATE TABLE supplierpayments (
+   sPaytId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   sPaySupplierId INTEGER NOT NULL,
+   sPayUserId INTEGER NOT NULL,
+   sPayAmount FLOAT NOT NULL,
+   sPayDate DATETIME NOT NULL,
+   FOREIGN KEY (sPaySupplierId) REFERENCES suppliers(supplierId) ON DELETE CASCADE,
+   FOREIGN KEY (sPayUserId) REFERENCES users(userId) ON DELETE CASCADE
+);
+CREATE TABLE clientreceipts (
 	cReceiptId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	cReceiptTotal FLOAT NOT NULL,
    cReceiptChange FLOAT NOT NULL,
@@ -70,13 +85,28 @@ CREATE TABLE clientReceipt (
    FOREIGN KEY (cReceiptClientId) REFERENCES clients(clientId) ON DELETE CASCADE,
    FOREIGN KEY (cReceiptUserId) REFERENCES users(userId) ON DELETE CASCADE
 );
-CREATE TABLE clientReceiptProducts (
-   cReceiptId INTEGER NOT NULL,
+CREATE TABLE clientreceiptproducts (
+   cReceipReceiptId INTEGER NOT NULL,
    cReceiptProductId INTEGER NOT NULL,
    cReceiptPrice FLOAT NOT NULL,
    cReceiptQuantity INTEGER NOT NULL,
-   FOREIGN KEY (cReceiptId) REFERENCES clientreceipt (cReceiptId) ON DELETE CASCADE,
+   FOREIGN KEY (cReceipReceiptId) REFERENCES clientreceipts (cReceiptId) ON DELETE CASCADE,
    FOREIGN KEY (cReceiptProductId) REFERENCES products (productId) ON DELETE CASCADE
+);
+CREATE TABLE clientpayments (
+   cPaymentId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   cPaymentClientId INTEGER NOT NULL,
+   cPaymentUserId INTEGER NOT NULL,
+   cPaymentAmount FLOAT NOT NULL,
+   cPaymentDate DATETIME NOT NULL,
+   FOREIGN KEY (cPaymentClientId) REFERENCES clients(clientId) ON DELETE CASCADE,
+   FOREIGN KEY (cPaymentUserId) REFERENCES users(userId) ON DELETE CASCADE
+);
+CREATE TABLE preferences (
+   storeId INTEGER NOT NULL PRIMARY KEY,
+   storeName VARCHAR(20) NOT NULL, 
+   daysNotification INTEGER NOT NULL,
+   quantityNotification FLOAT NOT NULL
 );
 
 DELIMITER $$
@@ -100,5 +130,12 @@ BEGIN
 END$$
 DELIMITER ;
 
-INSERT INTO users (userName, userLastName, userEmail, userPassword)
-VALUES ('default', 'user', 'admin@gmail.com', '$2y$10$bvZK7EFC4SQ6903V9/hR5OfoPWAqvG6A7QCq4WCuz0ZPXja49xJhO');
+INSERT INTO roles (roleName) VALUES ('Administrador');
+INSERT INTO roles (roleName) VALUES ('Vendedor');
+INSERT INTO roles (roleName) VALUES ('Almacen');
+
+INSERT INTO users (userName, userLastName, userEmail, userPassword, userRoleId)
+VALUES ('default', 'user', 'admin@gmail.com', '$2y$10$bvZK7EFC4SQ6903V9/hR5OfoPWAqvG6A7QCq4WCuz0ZPXja49xJhO' , 1);
+
+INSERT INTO preferences (storeId, storeName, daysNotification, quantityNotification) 
+VALUES (1, 'DEFAULT', 0, 0);

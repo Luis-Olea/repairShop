@@ -1,7 +1,7 @@
 <nav class="nav-sb">
     <div class="logo">
         <i class="bx bx-menu menu-icon"></i>
-        <span class="logo-name">CORAVI</span>
+        <span class="logo-name"><?= $_SESSION['storeName'] ?></span>
     </div>
     <div class="button-modes">
         <input type="checkbox" id="dark-mode">
@@ -11,7 +11,7 @@
     <div class="sidebar">
         <div class="logo">
             <i class="bx bx-menu menu-icon"></i>
-            <span class="logo-name">CORAVI</span>
+            <span class="logo-name"><?= $_SESSION['storeName'] ?></span>
         </div>
 
         <div class="sidebar-content">
@@ -22,48 +22,62 @@
                         <span class="link">Dashboard</span>
                     </a>
                 </li>
-                <li class="list">
-                    <a href="pos.php" class="nav-sb-link">
-                        <i class="bx bx-cart icon"></i>
-                        <span class="link">POS</span>
-                    </a>
-                </li>
-                <li class="list">
-                    <a href="productMenu.php" class="nav-sb-link">
-                        <i class="bx bx-store-alt icon"></i>
-                        <span class="link">Productos</span>
-                    </a>
-                </li>
-                <li class="list">
-                    <a href="clientMenu.php" class="nav-sb-link">
-                        <i class="bx bx-user-circle icon"></i>
-                        <span class="link">Clientes</span>
-                    </a>
-                </li>
-                <li class="list">
-                    <a href="clientReceipt.php" class="nav-sb-link">
-                        <i class="bx bx-dollar-circle icon"></i>
-                        <span class="link">Ventas</span>
-                    </a>
-                </li>
-                <li class="list">
-                    <a href="supplierMenu.php" class="nav-sb-link">
-                        <i class="bx bx-box icon"></i>
-                        <span class="link">Proovedores</span>
-                    </a>
-                </li>
-                <li class="list">
-                    <a href="suppPayments.php" class="nav-sb-link">
-                        <i class="bx bx-edit icon"></i>
-                        <span class="link">Pedidos</span>
-                    </a>
-                </li>
-                <li class="list">
-                    <a href="userMenu.php" class="nav-sb-link">
-                        <i class="bx bx-user icon"></i>
-                        <span class="link">Usuarios</span>
-                    </a>
-                </li>
+                <?php if ($_SESSION['roleId'] != 3) : ?>
+                    <li class="list">
+                        <a href="pos.php" class="nav-sb-link">
+                            <i class="bx bx-cart icon"></i>
+                            <span class="link">POS</span>
+                        </a>
+                    </li>
+                <?php endif;
+                if ($_SESSION['roleId'] != 2) : ?>
+                    <li class="list">
+                        <a href="productMenu.php" class="nav-sb-link">
+                            <i class="bx bx-store-alt icon"></i>
+                            <span class="link">Productos</span>
+                        </a>
+                    </li>
+                <?php endif;
+                if ($_SESSION['roleId'] != 3) : ?>
+                    <li class="list">
+                        <a href="clientMenu.php" class="nav-sb-link">
+                            <i class="bx bx-user-circle icon"></i>
+                            <span class="link">Clientes</span>
+                        </a>
+                    </li>
+                <?php endif;
+                if ($_SESSION['roleId'] != 3) : ?>
+                    <li class="list">
+                        <a href="clientReceipt.php" class="nav-sb-link">
+                            <i class="bx bx-dollar-circle icon"></i>
+                            <span class="link">Ventas</span>
+                        </a>
+                    </li>
+                <?php endif;
+                if ($_SESSION['roleId'] != 2) : ?>
+                    <li class="list">
+                        <a href="supplierMenu.php" class="nav-sb-link">
+                            <i class="bx bx-box icon"></i>
+                            <span class="link">Proovedores</span>
+                        </a>
+                    </li>
+                <?php endif;
+                if ($_SESSION['roleId'] != 2) : ?>
+                    <li class="list">
+                        <a href="suppPayments.php" class="nav-sb-link">
+                            <i class="bx bx-edit icon"></i>
+                            <span class="link">Pedidos</span>
+                        </a>
+                    </li>
+                <?php endif;
+                if ($_SESSION['roleId'] == 1) : ?>
+                    <li class="list">
+                        <a href="userMenu.php" class="nav-sb-link">
+                            <i class="bx bx-user icon"></i>
+                            <span class="link">Usuarios</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
 
             <ul class="listsE">

@@ -131,6 +131,9 @@
 .dark-mode .nav-link .link {
   color: #ffffff;
 }
+.dark-mode .notification-link {
+  color: #ffffff;
+}
 
 /*Alert DARK MODE*/
 .dark-mode .container-bottom {
